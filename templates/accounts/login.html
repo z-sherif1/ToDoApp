@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | TaskFlow{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-brand">
+            <div class="auth-brand-icon">
+                <i class="bi bi-check2-square" aria-hidden="true"></i>
+            </div>
+            <h1>TaskFlow</h1>
+        </div>
+
+        <div class="auth-heading">
+            <h2>Welcome Back!</h2>
+            <p>Sign in to continue managing your tasks.</p>
+        </div>
+
+        <form method="POST" class="styled-django-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-error-message" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="auth-submit-btn">
+                Login
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account?
+            <a href="{% url 'register' %}">Create Account</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Categories | TaskFlow{% endblock %}
+
+{% block page_heading %}Categories{% endblock %}
+{% block page_subtitle %}Organize your tasks into categories.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/categories.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="categories-page">
+
+    <div class="categories-header">
+        <div>
+            <h2>Your Categories</h2>
+            <p>Manage the categories you use to organize your tasks.</p>
+        </div>
+
+        <a href="{% url 'category_create' %}" class="primary-btn">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            New Category
+        </a>
+    </div>
+
+
+    {% if categories %}
+
+        <div class="categories-grid">
+
+            {% for category in categories %}
+
+                <div class="category-card">
+
+                    <div class="category-card-top">
+
+                        <div class="category-icon">
+                            <i class="bi bi-folder" aria-hidden="true"></i>
+                        </div>
+
+                        <span class="category-date">
+                            {{ category.created_at|date:"M d, Y" }}
+                        </span>
+
+                    </div>
+
+                    <h3>{{ category.name }}</h3>
+
+                    <div class="category-actions">
+
+                        <a href="{% url 'category_update' category.pk %}" class="category-edit-btn" aria-label="Edit category: {{ category.name }}">
+                            <i class="bi bi-pencil" aria-hidden="true"></i>
+                            Edit
+                        </a>
+
+                        <a href="{% url 'category_delete' category.pk %}" class="category-delete-btn" aria-label="Delete category: {{ category.name }}">
+                            <i class="bi bi-trash" aria-hidden="true"></i>
+                            Delete
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="categories-empty">
+
+            <div class="empty-icon">
+                <i class="bi bi-folder2-open" aria-hidden="true"></i>
+            </div>
+
+            <h3>No Categories Yet</h3>
+
+            <p>Create your first category to organize your tasks.</p>
+
+            <a href="{% url 'category_create' %}" class="primary-btn">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                Create Category
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

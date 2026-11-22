@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}TaskFlow{% endblock %}</title>
+
+    {# Apply saved theme and sidebar state BEFORE first paint (prevents flashing) #}
+    <script>
+        (function () {
+            var root = document.documentElement;
+            try {
+                var theme = localStorage.getItem('taskflow-theme');
+                if (theme !== 'dark' && theme !== 'light') {
+                    theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+                }
+                root.setAttribute('data-theme', theme);
+                root.setAttribute('data-bs-theme', theme);
+
+                if (localStorage.getItem('taskflow-sidebar') === 'collapsed') {
+                    root.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {
+                /* localStorage unavailable: fall back to the light theme */
+            }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body{% if not request.user.is_authenticated %} class="auth-body"{% endif %}>
+    <a href="#mainContent" class="skip-link">Skip to content</a>
+
+    <div class="app-layout">
+
+        <aside class="sidebar" id="sidebar" aria-label="Primary">
+            <a href="{% url 'dashboard' %}" class="sidebar-brand">
+                <span class="brand-icon">
+                    <i class="bi bi-check2-square"></i>
+                </span>
+                <span class="brand-name">TaskFlow</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Main navigation">
+                {% with current=request.resolver_match.url_name %}
+                    <a href="{% url 'dashboard' %}"
+                       class="sidebar-link {% if current == 'dashboard' %}active{% endif %}"
+                       {% if current == 'dashboard' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-grid"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="{% url 'task_list' %}"
+                       class="sidebar-link {% if 'task' in current %}active{% endif %}"
+                       {% if 'task' in current %}aria-current="page"{% endif %}>
+                        <i class="bi bi-list-task"></i>
+                        <span>My Tasks</span>
+                    </a>
+
+                    <a href="{% url 'category_list' %}"
+                       class="sidebar-link {% if 'category' in current %}active{% endif %}"
+                       {% if 'category' in current %}aria-current="page"{% endif %}>
+                        <i class="bi bi-folder"></i>
+                        <span>Categories</span>
+                    </a>
+                {% endwith %}
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-user">
+                    <div class="user-avatar" aria-hidden="true">
+                        {{ request.user.username|slice:":1"|upper }}
+                    </div>
+
+                    <div class="user-info">
+                        <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                        <small>{{ request.user.email|default:"Account" }}</small>
+                    </div>
+                </div>
+
+                <form method="POST" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+        <main class="main-content" id="mainContent">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button type="button"
+                            class="sidebar-toggle"
+                            id="sidebarToggle"
+                            aria-label="Toggle navigation"
+                            aria-controls="sidebar"
+                            aria-expanded="false">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <div class="topbar-heading">
+                        <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
+                        <div class="topbar-subtitle">{% block page_subtitle %}{% endblock %}</div>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <button type="button"
+                            class="theme-toggle"
+                            id="themeToggle"
+                            aria-label="Switch to dark mode"
+                            title="Switch to dark mode">
+                        <i class="bi bi-moon-stars-fill theme-icon-moon"></i>
+                        <i class="bi bi-sun-fill theme-icon-sun"></i>
+                    </button>
+
+                    <a href="{% url 'task_create' %}" class="topbar-create-btn">
+                        <i class="bi bi-plus-lg"></i>
+                        <span>New Task</span>
+                    </a>
+                </div>
+            </header>
+
+            <section class="page-content">
+
+                {% if messages %}
+                    <div class="django-messages">
+                        {% for message in messages %}
+                            <div class="django-message {{ message.tags }}" role="status">
+                                <i class="message-icon bi {% if message.level_tag == 'success' %}bi-check-circle{% elif message.level_tag == 'error' %}bi-exclamation-octagon{% elif message.level_tag == 'warning' %}bi-exclamation-triangle{% else %}bi-info-circle{% endif %}"></i>
+                                <span class="message-text">{{ message }}</span>
+                                <button type="button"
+                                        class="notification-close"
+                                        aria-label="Close notification">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/tasks.js' %}"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

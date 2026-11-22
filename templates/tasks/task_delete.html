@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Task | TaskFlow{% endblock %}
+
+{% block page_heading %}Delete Task{% endblock %}
+{% block page_subtitle %}Confirm task deletion.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="confirmation-page">
+
+    <div class="confirmation-card" aria-labelledby="deleteTaskTitle" aria-describedby="deleteTaskText">
+
+        <div class="confirmation-icon">
+            <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+        </div>
+
+        <h2 id="deleteTaskTitle">Delete Task?</h2>
+
+        <p id="deleteTaskText">
+            Are you sure you want to delete
+            <strong>{{ task.title }}</strong>?
+        </p>
+
+        <p class="confirmation-note">
+            This action cannot be undone.
+        </p>
+
+        <form method="POST" class="confirmation-actions">
+            {% csrf_token %}
+
+            <a href="{% url 'task_detail' task.pk %}" class="secondary-btn">
+                Cancel
+            </a>
+
+            <button type="submit" class="danger-btn">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Delete Task
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

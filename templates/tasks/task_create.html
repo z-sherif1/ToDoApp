@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Task | TaskFlow{% endblock %}
+
+{% block page_heading %}Create Task{% endblock %}
+{% block page_subtitle %}Add a new task to your task list.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="task-form-page">
+
+    <div class="task-form-header">
+        <div class="task-form-icon">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        </div>
+
+        <div>
+            <h2>Create New Task</h2>
+            <p>Fill in the details below to create your task.</p>
+        </div>
+    </div>
+
+    <div class="task-form-card">
+
+        <form method="POST" class="styled-django-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-error-message" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {{ form.as_p }}
+
+            <div class="form-actions">
+                <a href="{% url 'task_list' %}" class="secondary-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="primary-btn">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Create Task
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

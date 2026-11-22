@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Category | TaskFlow{% endblock %}
+
+{% block page_heading %}Delete Category{% endblock %}
+{% block page_subtitle %}Confirm category deletion.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/categories.css' %}">
+{# Provides the shared .confirmation-* and .danger-btn styles (moves to base.css in the final cleanup) #}
+<link rel="stylesheet" href="{% static 'css/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="confirmation-page">
+
+    <div class="confirmation-card" aria-labelledby="deleteCategoryTitle" aria-describedby="deleteCategoryText">
+
+        <div class="confirmation-icon">
+            <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+        </div>
+
+        <h2 id="deleteCategoryTitle">Delete Category?</h2>
+
+        <p id="deleteCategoryText">
+            Are you sure you want to delete
+            <strong>{{ category.name }}</strong>?
+        </p>
+
+        <p class="confirmation-note">
+            This action cannot be undone. Tasks associated with this category
+            will remain, but will no longer have a category.
+        </p>
+
+        <form method="POST" class="confirmation-actions">
+            {% csrf_token %}
+
+            <a href="{% url 'category_list' %}" class="secondary-btn">
+                Cancel
+            </a>
+
+            <button type="submit" class="danger-btn">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Delete Category
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

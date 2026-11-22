@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Tasks | TaskFlow{% endblock %}
+
+{% block page_heading %}My Tasks{% endblock %}
+{% block page_subtitle %}Organize, track, and manage your tasks.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="tasks-page-header">
+
+    <div>
+        <h2>All Tasks</h2>
+        <p>Keep track of everything you need to do.</p>
+    </div>
+
+    <a href="{% url 'task_create' %}" class="primary-btn">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        New Task
+    </a>
+
+</div>
+
+
+<!-- Search and Task Count -->
+<div class="tasks-toolbar">
+
+    <form method="GET" action="{% url 'task_list' %}" class="task-search-form" role="search">
+
+        <i class="bi bi-search" aria-hidden="true"></i>
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search tasks by title..."
+            aria-label="Search tasks by title"
+            autocomplete="off"
+            value="{{ search_query }}"
+        >
+
+        {% if search_query %}
+            <a href="{% url 'task_list' %}" class="clear-search" aria-label="Clear search" title="Clear search">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </a>
+        {% endif %}
+
+        <button type="submit">Search</button>
+
+    </form>
+
+    <div class="tasks-count" aria-live="polite">
+        <strong>{{ tasks|length }}</strong>
+        <span>Tasks found</span>
+    </div>
+
+</div>
+
+
+<!-- Tasks List -->
+<div class="tasks-grid">
+
+    {% for task in tasks %}
+
+        <article class="task-card">
+
+            <!-- Card Header -->
+            <div class="task-card-header">
+
+                <span class="task-status {% if task.status == 'COMPLETED' %}status-completed{% elif task.status == 'IN_PROGRESS' %}status-in-progress{% else %}status-pending{% endif %}">
+
+                    {% if task.status == 'COMPLETED' %}
+                        <i class="bi bi-check-circle" aria-hidden="true"></i>
+                    {% elif task.status == 'IN_PROGRESS' %}
+                        <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                    {% else %}
+                        <i class="bi bi-clock" aria-hidden="true"></i>
+                    {% endif %}
+
+                    {{ task.get_status_display }}
+
+                </span>
+
+                <span class="task-priority {% if task.priority == 'HIGH' %}priority-high{% elif task.priority == 'MEDIUM' %}priority-medium{% else %}priority-low{% endif %}">
+
+                    <i class="bi bi-flag" aria-hidden="true"></i>
+                    {{ task.get_priority_display }}
+
+                </span>
+
+            </div>
+
+
+            <!-- Card Body -->
+            <div class="task-card-body">
+
+                <h3>
+                    <a href="{% url 'task_detail' task.pk %}">
+                        {{ task.title }}
+                    </a>
+                </h3>
+
+                <p class="task-description">
+                    {% if task.description %}
+                        {{ task.description|truncatechars:110 }}
+                    {% else %}
+                        No description provided.
+                    {% endif %}
+                </p>
+
+            </div>
+
+
+            <!-- Category and Due Date -->
+            <div class="task-card-meta">
+
+                <div class="task-meta-item">
+                    <i class="bi bi-folder" aria-hidden="true"></i>
+
+                    <span>
+                        {% if task.category %}
+                            {{ task.category.name }}
+                        {% else %}
+                            Uncategorized
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="task-meta-item">
+                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+
+                    <span>
+                        {% if task.due_date %}
+                            {{ task.due_date|date:"M d, Y" }}
+                        {% else %}
+                            No due date
+                        {% endif %}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- Card Footer -->
+            <div class="task-card-footer">
+
+                <span class="task-created">
+                    Created {{ task.created_at|date:"M d, Y" }}
+                </span>
+
+                <div class="task-card-actions">
+
+                    <a href="{% url 'task_detail' task.pk %}" title="View Task" aria-label="View task: {{ task.title }}">
+                        <i class="bi bi-eye" aria-hidden="true"></i>
+                    </a>
+
+                    <a href="{% url 'task_update' task.pk %}" title="Edit Task" aria-label="Edit task: {{ task.title }}">
+                        <i class="bi bi-pencil" aria-hidden="true"></i>
+                    </a>
+
+                    <a href="{% url 'task_delete' task.pk %}" title="Delete Task" aria-label="Delete task: {{ task.title }}">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    {% empty %}
+
+        <div class="tasks-empty-state">
+
+            <div class="empty-icon">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+            </div>
+
+            {% if search_query %}
+                <h3>No matching tasks found</h3>
+                <p>Try searching with another title.</p>
+
+                <a href="{% url 'task_list' %}" class="primary-btn">
+                    Clear Search
+                </a>
+            {% else %}
+                <h3>No tasks yet</h3>
+                <p>You haven't created any tasks. Start organizing your work!</p>
+
+                <a href="{% url 'task_create' %}" class="primary-btn">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Create Your First Task
+                </a>
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

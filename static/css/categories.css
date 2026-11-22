@@ -1,0 +1,368 @@
+/* ==========================================================================
+   TaskFlow – categories.css
+   Category list, category create/update forms.
+   Uses ONLY the design tokens from base.css. No theme-specific rules here:
+   dark mode works automatically through the variables.
+
+   NOTE: the "Shared components" section is intentionally identical to the
+   one in tasks.css. It will be moved into base.css in the final cleanup.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. SHARED COMPONENTS (buttons, form styling)
+   ========================================================================== */
+
+.primary-btn,
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease),
+                color 0.2s var(--ease), filter 0.2s var(--ease);
+}
+
+.primary-btn {
+    color: var(--on-primary);
+    background: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.primary-btn:hover {
+    color: var(--on-primary);
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.secondary-btn {
+    color: var(--text-secondary);
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+}
+
+.secondary-btn:hover {
+    color: var(--text-main);
+    background: var(--bg-subtle);
+    border-color: var(--border-strong);
+}
+
+.styled-django-form p {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 22px;
+}
+
+.styled-django-form label {
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.styled-django-form input:not([type="checkbox"]),
+.styled-django-form select,
+.styled-django-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    color: var(--text-main);
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease),
+                background-color var(--speed) var(--ease);
+}
+
+.styled-django-form input::placeholder,
+.styled-django-form textarea::placeholder {
+    color: var(--text-faint);
+}
+
+.styled-django-form input:focus,
+.styled-django-form select:focus,
+.styled-django-form textarea:focus {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
+}
+
+.styled-django-form .helptext {
+    color: var(--text-secondary);
+    font-size: 11.5px;
+}
+
+.styled-django-form ul.errorlist {
+    margin-top: 3px;
+    padding-left: 0;
+    color: var(--danger-text);
+    font-size: 12px;
+    list-style: none;
+}
+
+.form-error-message {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    color: var(--danger-text);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    margin-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+
+/* ==========================================================================
+   2. CATEGORY LIST – PAGE HEADER
+   ========================================================================== */
+
+.categories-page {
+    width: 100%;
+}
+
+.categories-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.categories-header h2,
+.category-form-heading h2 {
+    margin-bottom: 6px;
+    color: var(--text-main);
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.categories-header p,
+.category-form-heading p {
+    margin-bottom: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+
+/* ==========================================================================
+   3. CATEGORY LIST – GRID & CARD
+   ========================================================================== */
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    min-width: 0;
+    padding: 22px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.2s var(--ease), transform 0.2s var(--ease),
+                box-shadow 0.2s var(--ease), background-color var(--speed) var(--ease);
+}
+
+.category-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+}
+
+.category-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.category-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    color: var(--sage-text);
+    background: var(--sage-soft);
+    border-radius: var(--radius-md);
+    font-size: 20px;
+}
+
+.category-date {
+    color: var(--text-secondary);
+    font-size: 11.5px;
+}
+
+.category-card h3 {
+    margin-bottom: 22px;
+    color: var(--text-main);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.category-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.category-edit-btn,
+.category-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 6px;
+    padding: 9px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease),
+                color 0.2s var(--ease);
+}
+
+.category-edit-btn {
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+}
+
+.category-edit-btn:hover {
+    color: var(--accent-hover);
+    border-color: var(--accent);
+}
+
+.category-delete-btn {
+    color: var(--danger-text);
+    background: var(--danger-bg);
+}
+
+.category-delete-btn:hover {
+    color: var(--danger-text);
+    border-color: var(--danger-border);
+}
+
+
+/* ==========================================================================
+   4. CATEGORY LIST – EMPTY STATE
+   ========================================================================== */
+
+.categories-empty {
+    padding: 64px 20px;
+    text-align: center;
+    background: var(--bg-white);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+}
+
+.empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+    border-radius: var(--radius-lg);
+    font-size: 27px;
+}
+
+.categories-empty h3 {
+    margin-bottom: 8px;
+    color: var(--text-main);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.categories-empty p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+
+/* ==========================================================================
+   5. CATEGORY CREATE & UPDATE FORMS
+   ========================================================================== */
+
+.category-form-page {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.category-form-card {
+    padding: 30px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    transition: background-color var(--speed) var(--ease), border-color var(--speed) var(--ease);
+}
+
+.category-form-heading {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.category-form-heading .category-icon {
+    margin: 0 auto 15px;
+}
+
+
+/* ==========================================================================
+   6. RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .categories-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .categories-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .category-form-card {
+        padding: 22px 16px;
+    }
+
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .form-actions a,
+    .form-actions button {
+        width: 100%;
+    }
+}

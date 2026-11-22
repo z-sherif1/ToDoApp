@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Category | TaskFlow{% endblock %}
+
+{% block page_heading %}Update Category{% endblock %}
+{% block page_subtitle %}Change the name of your category.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/categories.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="category-form-page">
+
+    <div class="category-form-card">
+
+        <div class="category-form-heading">
+            <div class="category-icon">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+            </div>
+
+            <h2>Update Category</h2>
+            <p>Edit your category information.</p>
+        </div>
+
+        <form method="POST" class="styled-django-form">
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-error-message" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {{ form.as_p }}
+
+            <div class="form-actions">
+
+                <a href="{% url 'category_list' %}" class="secondary-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="primary-btn">
+                    <i class="bi bi-check-lg" aria-hidden="true"></i>
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

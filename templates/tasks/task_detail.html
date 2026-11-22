@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ task.title }} | TaskFlow{% endblock %}
+
+{% block page_heading %}Task Details{% endblock %}
+{% block page_subtitle %}View and manage your task.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/tasks.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Back Navigation -->
+<div class="detail-navigation">
+    <a href="{% url 'task_list' %}">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        Back to Tasks
+    </a>
+</div>
+
+
+<!-- Task Details Container -->
+<div class="task-detail-container">
+
+    <!-- Main Details -->
+    <div class="task-detail-main">
+
+        <div class="detail-header">
+
+            <div>
+                <span class="detail-label">TASK DETAILS</span>
+                <h2>{{ task.title }}</h2>
+            </div>
+
+            <span class="task-status {% if task.status == 'COMPLETED' %}status-completed{% elif task.status == 'IN_PROGRESS' %}status-in-progress{% else %}status-pending{% endif %}">
+
+                {% if task.status == 'COMPLETED' %}
+                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+                {% elif task.status == 'IN_PROGRESS' %}
+                    <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                {% else %}
+                    <i class="bi bi-clock" aria-hidden="true"></i>
+                {% endif %}
+
+                {{ task.get_status_display }}
+
+            </span>
+
+        </div>
+
+
+        <!-- Description -->
+        <div class="detail-section">
+
+            <h3>
+                <i class="bi bi-card-text" aria-hidden="true"></i>
+                Description
+            </h3>
+
+            <div class="detail-description">
+                {% if task.description %}
+                    {{ task.description|linebreaksbr }}
+                {% else %}
+                    <span class="detail-muted">No description provided.</span>
+                {% endif %}
+            </div>
+
+        </div>
+
+
+        <!-- Task Information -->
+        <div class="detail-section">
+
+            <h3>
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                Task Information
+            </h3>
+
+            <div class="detail-info-grid">
+
+                <!-- Category -->
+                <div class="detail-info-item">
+                    <span>Category</span>
+
+                    <strong>
+                        {% if task.category %}
+                            <i class="bi bi-folder" aria-hidden="true"></i>
+                            {{ task.category.name }}
+                        {% else %}
+                            Uncategorized
+                        {% endif %}
+                    </strong>
+                </div>
+
+
+                <!-- Priority -->
+                <div class="detail-info-item">
+                    <span>Priority</span>
+
+                    <strong>
+                        <span class="task-priority {% if task.priority == 'HIGH' %}priority-high{% elif task.priority == 'MEDIUM' %}priority-medium{% else %}priority-low{% endif %}">
+                            <i class="bi bi-flag" aria-hidden="true"></i>
+                            {{ task.get_priority_display }}
+                        </span>
+                    </strong>
+                </div>
+
+
+                <!-- Due Date -->
+                <div class="detail-info-item">
+                    <span>Due Date</span>
+
+                    <strong>
+                        {% if task.due_date %}
+                            <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                            {{ task.due_date|date:"M d, Y - h:i A" }}
+                        {% else %}
+                            No due date
+                        {% endif %}
+                    </strong>
+                </div>
+
+
+                <!-- Created At -->
+                <div class="detail-info-item">
+                    <span>Created At</span>
+
+                    <strong>
+                        <i class="bi bi-calendar-plus" aria-hidden="true"></i>
+                        {{ task.created_at|date:"M d, Y - h:i A" }}
+                    </strong>
+                </div>
+
+
+                <!-- Last Updated -->
+                <div class="detail-info-item">
+                    <span>Last Updated</span>
+
+                    <strong>
+                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                        {{ task.updated_at|date:"M d, Y - h:i A" }}
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Actions -->
+        <div class="detail-actions">
+
+            <a href="{% url 'task_update' task.pk %}" class="primary-btn">
+                <i class="bi bi-pencil" aria-hidden="true"></i>
+                Edit Task
+            </a>
+
+            <a href="{% url 'task_delete' task.pk %}" class="detail-delete-btn">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Delete Task
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Side Information -->
+    <aside class="task-detail-sidebar" aria-label="Task summary">
+
+        <!-- Task Status Card -->
+        <div class="detail-side-card">
+
+            <div class="detail-side-icon">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+            </div>
+
+            <h3>Task Status</h3>
+
+            <p>
+                {% if task.status == 'COMPLETED' %}
+                    Great job! This task has been completed.
+                {% elif task.status == 'IN_PROGRESS' %}
+                    You're currently working on this task.
+                {% else %}
+                    This task is waiting to be started.
+                {% endif %}
+            </p>
+
+        </div>
+
+
+        <!-- Deadline Card -->
+        {% if task.due_date %}
+
+            <div class="detail-side-card">
+
+                <div class="detail-side-icon calendar-icon">
+                    <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                </div>
+
+                <h3>Deadline</h3>
+
+                <p>{{ task.due_date|date:"l, F d, Y" }}</p>
+
+            </div>
+
+        {% endif %}
+
+    </aside>
+
+</div>
+
+{% endblock %}

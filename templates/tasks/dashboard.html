@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | TaskFlow{% endblock %}
+
+{% block page_heading %}Dashboard{% endblock %}
+{% block page_subtitle %}Here's an overview of your productivity.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Welcome Section -->
+<div class="welcome-section">
+    <div>
+        <h2>Welcome back, {{ user.first_name|default:user.username }}! 👋</h2>
+        <p>Let's make today productive.</p>
+    </div>
+
+    <a href="{% url 'task_create' %}" class="primary-btn">
+        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+        Add New Task
+    </a>
+</div>
+
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon purple">
+                <i class="bi bi-list-task" aria-hidden="true"></i>
+            </div>
+            <span class="stat-label">Total Tasks</span>
+        </div>
+
+        <h2>{{ total_tasks }}</h2>
+        <p>All your tasks</p>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon orange">
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+            </div>
+            <span class="stat-label">Pending</span>
+        </div>
+
+        <h2>{{ pending_tasks }}</h2>
+        <p>Waiting to be started</p>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon blue">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+            </div>
+            <span class="stat-label">In Progress</span>
+        </div>
+
+        <h2>{{ in_progress_tasks }}</h2>
+        <p>Currently working on</p>
+    </div>
+
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green">
+                <i class="bi bi-check-circle" aria-hidden="true"></i>
+            </div>
+            <span class="stat-label">Completed</span>
+        </div>
+
+        <h2>{{ completed_tasks }}</h2>
+        <p>Successfully completed</p>
+    </div>
+
+</div>
+
+
+<!-- Main Dashboard Grid -->
+<div class="dashboard-grid">
+
+    <!-- Recent Tasks -->
+    <div class="dashboard-panel recent-panel">
+
+        <div class="panel-header">
+            <div>
+                <h3>Recent Tasks</h3>
+                <p>Your latest activities</p>
+            </div>
+
+            <a href="{% url 'task_list' %}" class="view-all-link">
+                View All <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+
+        {% if recent_tasks %}
+
+            <div class="recent-tasks-list">
+
+                {% for task in recent_tasks %}
+
+                    <div class="recent-task-item">
+
+                        <div class="task-status-icon {% if task.status == 'COMPLETED' %}completed{% elif task.status == 'IN_PROGRESS' %}in-progress{% else %}pending{% endif %}" title="{{ task.get_status_display }}">
+
+                            {% if task.status == 'COMPLETED' %}
+                                <i class="bi bi-check-lg" aria-hidden="true"></i>
+                            {% elif task.status == 'IN_PROGRESS' %}
+                                <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
+                            {% else %}
+                                <i class="bi bi-circle" aria-hidden="true"></i>
+                            {% endif %}
+
+                            <span class="visually-hidden">{{ task.get_status_display }}</span>
+
+                        </div>
+
+
+                        <div class="recent-task-info">
+
+                            <a href="{% url 'task_detail' task.pk %}">
+                                {{ task.title }}
+                            </a>
+
+                            <span>
+                                {% if task.category %}
+                                    {{ task.category.name }}
+                                {% else %}
+                                    Uncategorized
+                                {% endif %}
+                            </span>
+
+                        </div>
+
+
+                        <div class="task-priority {% if task.priority == 'HIGH' %}priority-high{% elif task.priority == 'MEDIUM' %}priority-medium{% else %}priority-low{% endif %}">
+
+                            {{ task.get_priority_display }}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="dashboard-empty">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+                <h4>No tasks yet</h4>
+                <p>Create your first task to get started.</p>
+
+                <a href="{% url 'task_create' %}" class="primary-btn">
+                    Create Task
+                </a>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Quick Overview -->
+    <div class="dashboard-panel overview-panel">
+
+        <div class="panel-header">
+            <div>
+                <h3>Quick Overview</h3>
+                <p>Your productivity summary</p>
+            </div>
+        </div>
+
+
+        <div class="overview-item">
+            <div class="overview-icon purple">
+                <i class="bi bi-folder" aria-hidden="true"></i>
+            </div>
+
+            <div>
+                <span>Total Categories</span>
+                <strong>{{ total_categories }}</strong>
+            </div>
+        </div>
+
+
+        <div class="overview-item">
+            <div class="overview-icon red">
+                <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+            </div>
+
+            <div>
+                <span>Overdue Tasks</span>
+                <strong>{{ overdue_count }}</strong>
+            </div>
+        </div>
+
+
+        <div class="overview-item">
+            <div class="overview-icon green">
+                <i class="bi bi-check2-all" aria-hidden="true"></i>
+            </div>
+
+            <div>
+                <span>Completion Rate</span>
+
+                <strong>
+                    {% if total_tasks > 0 %}
+                        {% widthratio completed_tasks total_tasks 100 %}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+
+
+        <a href="{% url 'category_list' %}" class="manage-categories-link">
+            Manage Categories
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Overdue Tasks -->
+{% if overdue_tasks %}
+
+<div class="dashboard-panel overdue-panel">
+
+    <div class="panel-header">
+        <div>
+            <h3><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Overdue Tasks</h3>
+            <p>Tasks that passed their due date</p>
+        </div>
+
+        <span class="overdue-count" aria-label="{{ overdue_count }} overdue tasks">{{ overdue_count }}</span>
+    </div>
+
+
+    <div class="overdue-list">
+
+        {% for task in overdue_tasks %}
+
+            <div class="overdue-item">
+
+                <div>
+                    <a href="{% url 'task_detail' task.pk %}">
+                        {{ task.title }}
+                    </a>
+
+                    <span>
+                        Due: {{ task.due_date|date:"M d, Y" }}
+                    </span>
+                </div>
+
+                <a href="{% url 'task_update' task.pk %}" class="overdue-action" aria-label="Update task: {{ task.title }}">
+                    Update
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
